@@ -12,55 +12,40 @@ def run_server() -> subprocess.Popen:
         [sys.executable, str(server_script)],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=sys.stderr,
+        text=True,
     )
 
 
 def send_message(proc: subprocess.Popen, message: Dict[str, Any]) -> None:
-    """按 MCP STDIO 规范发送一条 JSON-RPC 消息（带 Content-Length 头）"""
+    """按行发送一条 JSON-RPC 消息"""
     if proc.stdin is None:
         raise RuntimeError("server stdin is not available")
 
-    body_bytes = json.dumps(message, separators=(",", ":"), ensure_ascii=False).encode(
-        "utf-8"
-    )
-    header = f"Content-Length: {len(body_bytes)}\r\n\r\n".encode("ascii")
-
-    print("CLIENT:", message)
-    proc.stdin.write(header + body_bytes)
+    line = json.dumps(message, ensure_ascii=False)
+    print("CLIENT:", line)
+    proc.stdin.write(line + "\n")
     proc.stdin.flush()
 
 
 def read_message(proc: subprocess.Popen) -> Optional[Dict[str, Any]]:
-    """从 STDIO 读取一条 JSON-RPC 消息"""
+    """读取并解析一行 JSON-RPC 响应"""
     if proc.stdout is None:
         raise RuntimeError("server stdout is not available")
 
-    content_length: Optional[int] = None
-
-    # 读取 header
-    while True:
-        line = proc.stdout.readline()
-        if not line:
-            return None
-
-        if line in (b"\r\n", b"\n"):
-            break
-
-        header_line = line.decode("ascii", errors="ignore").strip()
-        if header_line.lower().startswith("content-length:"):
-            _, value = header_line.split(":", 1)
-            content_length = int(value.strip())
-
-    if content_length is None:
+    line = proc.stdout.readline()
+    if not line:
         return None
 
-    # 读取 body
-    body = proc.stdout.read(content_length)
-    if not body:
+    line = line.strip()
+    if not line:
         return None
 
-    message = json.loads(body.decode("utf-8"))
+    try:
+        message = json.loads(line)
+    except json.JSONDecodeError:
+        print("SERVER (raw):", line)
+        return None
+
     print("SERVER:", message)
     return message
 
@@ -69,7 +54,7 @@ def main() -> None:
     server = run_server()
 
     try:
-        # 1. initialize
+        # 1. initialize（补上 clientInfo）
         send_message(
             server,
             {
@@ -78,6 +63,10 @@ def main() -> None:
                 "method": "initialize",
                 "params": {
                     "protocolVersion": "2024-11-05",
+                    "clientInfo": {
+                        "name": "simple-client",
+                        "version": "0.1.0",
+                    },
                     "capabilities": {},
                 },
             },
