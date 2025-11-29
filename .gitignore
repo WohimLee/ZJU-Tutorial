@@ -1,0 +1,24 @@
+
+# foders
+res
+output
+result
+__pycache__
+test
+Test
+cache
+zh-en-data
+zh-en-tokens
+.ipynb_checkpoints
+
+# files
+*.pt
+*.pth
+*.pkl
+*.pdf
+*.o
+*.DS_Store
+test.py
+rewrite.py
+embedding
+vocab.json
