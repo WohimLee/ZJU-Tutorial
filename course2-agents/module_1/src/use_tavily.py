@@ -1,8 +1,9 @@
 
+import os
 
 # To install: pip install tavily-python
 from tavily import TavilyClient
-client = TavilyClient("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")
+client = TavilyClient(os.getenv("TAVILY_API_KEY"))
 response = client.search(
     query="英伟达股价"
 )

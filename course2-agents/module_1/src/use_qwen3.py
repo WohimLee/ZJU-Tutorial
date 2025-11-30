@@ -5,8 +5,8 @@ from openai import OpenAI
 
 client = OpenAI(
     # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx",
-    api_key="sk-9f53ec0ec3234971af8af2c605c83c09",
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key=os.getenv("ALIBABA_API_KEY"),
+    base_url=os.getenv("ALIBABA_API_URL"),
 )
 
 tools = []
