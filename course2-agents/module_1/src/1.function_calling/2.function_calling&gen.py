@@ -101,3 +101,22 @@ if msg.function_call:
 
     # 调用真实函数
     result = get_weather(**args)
+
+    # -----------------------------
+    # 第 3 步：把函数结果再发回模型
+    # -----------------------------
+    print("最终回复：", end="")
+    
+    final = client.chat.completions.create(
+        model="qwen3-max",
+        messages=[
+            {"role": "user", "content": "今天深圳天气怎么样？"},
+            msg,  # 模型的 function_call 消息
+            {
+                "role": "function",
+                "name": func_name,
+                "content": result,
+            }
+        ]
+    )
+    print(final.choices[0].message.content)
