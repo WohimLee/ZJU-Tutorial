@@ -63,13 +63,10 @@ def chose_function_llm(prompt):
     return response
 
 
-def final_summerize(prompt, fc_msg, weather_result):
-    """
-    使用流式输出的方式，在终端实时打印大模型最终回复。
-    同时返回完整的回复字符串。
-    """
+def final_sumerize(prompt, fc_msg, weather_result):
 
-    final_stream = llm_client.chat.completions.create(
+
+    response = llm_client.chat.completions.create(
         model="qwen3-max",
         messages=[
             {"role": "user", "content": prompt},
@@ -79,19 +76,9 @@ def final_summerize(prompt, fc_msg, weather_result):
                 "name": fc_msg.function_call.name,
                 "content": weather_result,
             }
-        ],
-        stream=True
+        ]
     )
-
-    full_content = ""
-    for chunk in final_stream:
-        delta = chunk.choices[0].delta
-        content = getattr(delta, "content", None) or ""
-        if content:
-            print(content, end="", flush=True)
-            full_content += content
-
-    return full_content
+    return response.choices[0].message.content
 
 
 if __name__ == "__main__":
@@ -109,6 +96,7 @@ if __name__ == "__main__":
 
         weather_result = get_weather(**args)
 
-        print("最终回复：", end="", flush=True)
-        final_response = final_summerize(prompt, fc_msg, weather_result)
-        print()
+        final_response = final_sumerize(prompt, fc_msg, weather_result)
+
+        print("最终回复：", end="")
+        print(final_response)

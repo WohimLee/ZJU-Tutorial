@@ -35,7 +35,7 @@ def get_weather(city: Annotated[str, 'The name of the city to be queried', True]
     return str(ret)
 
 # 注册登记函数
-functions = [
+tools = [
     {
         "name": "get_weather",
         "description": "查询某个城市的天气",
@@ -50,15 +50,14 @@ functions = [
 ]
 
 
-def chose_function_llm(prompt):
-    response = llm_client.chat.completions.create(
+def chat_with_llm(prompt):
+    response = llm_client.chat(
         model="qwen3-max",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "请根据提供的工具，回复用户,工具如下：", "tools": tools},
             {"role": "user", "content": prompt},
         ],
-        stream=False,
-        functions=functions
+        stream=False
     )
     return response
 

@@ -1,6 +1,4 @@
 import os
-import json
-
 from typing import  Annotated
 from openai import OpenAI
 
@@ -63,52 +61,24 @@ def chose_function_llm(prompt):
     return response
 
 
-def final_summerize(prompt, fc_msg, weather_result):
-    """
-    使用流式输出的方式，在终端实时打印大模型最终回复。
-    同时返回完整的回复字符串。
-    """
-
-    final_stream = llm_client.chat.completions.create(
-        model="qwen3-max",
-        messages=[
-            {"role": "user", "content": prompt},
-            fc_msg,  # 模型的 function_call 消息
-            {
-                "role": "function",
-                "name": fc_msg.function_call.name,
-                "content": weather_result,
-            }
-        ],
-        stream=True
-    )
-
-    full_content = ""
-    for chunk in final_stream:
-        delta = chunk.choices[0].delta
-        content = getattr(delta, "content", None) or ""
-        if content:
-            print(content, end="", flush=True)
-            full_content += content
-
-    return full_content
-
-
 if __name__ == "__main__":
     # prompt = "今天深圳天气怎么样？"
     while True:
 
         prompt = input("请输入: ")
-        fc_response = chose_function_llm(prompt)
+        response = chose_function_llm(prompt)
 
-        fc_msg = fc_response.choices[0].message
-        func_name = fc_msg.function_call.name
-        args = fc_msg.function_call.arguments  # 是 JSON 字符串
-        args = json.loads(args)
-        print("模型要求调用函数：", func_name, "参数：", args)
+        msg = response.choices[0].message
 
-        weather_result = get_weather(**args)
+        if msg.function_call:
+            func_name = msg.function_call.name
+            args = msg.function_call.arguments  # 是 JSON 字符串
+            import json
+            args = json.loads(args)
 
-        print("最终回复：", end="", flush=True)
-        final_response = final_summerize(prompt, fc_msg, weather_result)
-        print()
+            print("模型要求调用函数：", func_name, "参数：", args)
+
+            # 调用真实函数
+            result = get_weather(**args)
+
+            print(result)
