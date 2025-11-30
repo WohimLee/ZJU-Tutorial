@@ -67,78 +67,65 @@ tools = [
 ]
 
 
-
 def chat_with_llm(prompt):
-
     history = [
         {
             "role": "system",
-            "content": "请根据提供的工具，回复用户,工具如下："
+            "content": "请根据提供的工具，回复用户（可以自动选择和多次调用工具），工具如下："
+        },
+        {
+            "role": "user",
+            "content": prompt
         }
     ]
 
-    # 第一步：让大模型决定是否调用工具（非流式）
-    fc_response = llm_client.chat.completions.create(
-        model="qwen3-max",
-        messages=history + [{"role": "user", "content": prompt}],
-        tools=tools,
-        tool_choice="auto",
-        stream=False,
-    )
-
-    fc_msg = fc_response.choices[0].message
-
-    # 如果触发了工具调用
-    if fc_msg.tool_calls:
-        tool_call = fc_msg.tool_calls[0]
-        func_name = tool_call.function.name
-        func_args = json.loads(tool_call.function.arguments)
-
-        # 在本地执行函数
-        print("模型要求调用函数：", func_name, "参数：", func_args)
-        fun_res = eval(f"{func_name}(**func_args)")
-
-        # 构造包含工具调用与工具结果的完整对话历史
-        messages = history + [
-            {"role": "user", "content": prompt},
-            {
-                "role": "assistant",
-                "tool_calls": fc_msg.tool_calls,
-            },
-            {
-                "role": "tool",
-                "tool_call_id": tool_call.id,
-                "content": fun_res,
-            },
-        ]
-
-        # 第二步：使用流式输出的方式获取大模型最终回复
-        final_stream = llm_client.chat.completions.create(
+    # 假设要多次调用工具
+    while True:
+        
+        response = llm_client.chat.completions.create(
             model="qwen3-max",
-            messages=messages,
-            stream=True,
-            tool_choice="none",  # 最终回复阶段不再调用工具
+            messages=history,
+            tools=tools,
+            tool_choice="auto",
+            # stream=True
         )
+        msg = response.choices[0].message
 
-        full_content = ""
-        for chunk in final_stream:
-            delta = chunk.choices[0].delta
-            content = getattr(delta, "content", None) or ""
-            if content:
-                print(content, end="", flush=True)
-                full_content += content
-        print()
-        return full_content
+        # 如果有工具调用
+        if msg.tool_calls:
+            # 先把 assistant 这条带 tool_calls 的消息加入 history
+            history.append({
+                "role": "assistant",
+                "content": msg.content or "",
+                "tool_calls": msg.tool_calls,
+            })
 
-    # 未触发工具调用，直接用流式输出生成回复
-    final_stream = llm_client.chat.completions.create(
-        model="qwen3-max",
-        messages=history + [{"role": "user", "content": prompt}],
-        stream=True,
-    )
+            # 逐个执行工具并把结果回填到 history
+            for tool_call in msg.tool_calls:
+                tool_name = tool_call.function.name
+                tool_args = json.loads(tool_call.function.arguments or "{}")
+
+                tool_result = eval(f"{tool_name}(**tool_args)")
+
+                history.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "name": tool_name,
+                    "content": str(tool_result),
+                })
+            # 回填完工具结果后，继续 while True，进入下一轮模型调用
+            continue
+
+        # 没有 tool_calls 了，说明是最终回答
+        else:
+            history.append({
+                "role": "assistant",
+                "content": msg.content or "",
+            })
+            break
 
     full_content = ""
-    for chunk in final_stream:
+    for chunk in response:
         delta = chunk.choices[0].delta
         content = getattr(delta, "content", None) or ""
         if content:

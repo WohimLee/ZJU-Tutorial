@@ -69,7 +69,10 @@ def final_sumerize(prompt, fc_msg, weather_result):
     response = llm_client.chat.completions.create(
         model="qwen3-max",
         messages=[
-            {"role": "user", "content": prompt},
+            {
+                "role": "user", 
+                "content": prompt
+            },
             fc_msg,  # 模型的 function_call 消息
             {
                 "role": "function",
@@ -85,18 +88,20 @@ if __name__ == "__main__":
     # prompt = "今天深圳天气怎么样？"
     while True:
 
-        prompt = input("请输入: ")
+        prompt = "今天深圳天气怎么样？" # input("请输入: ")
         fc_response = chose_function_llm(prompt)
 
         fc_msg = fc_response.choices[0].message
         func_name = fc_msg.function_call.name
-        args = fc_msg.function_call.arguments  # 是 JSON 字符串
-        args = json.loads(args)
-        print("模型要求调用函数：", func_name, "参数：", args)
+        func_args = fc_msg.function_call.arguments  # 是 JSON 字符串
+        func_args = json.loads(func_args)
+        print("模型要求调用函数：", func_name, "参数：", func_args)
 
-        weather_result = get_weather(**args)
+        weather_result = eval(f"{func_name}(**func_args)")
 
         final_response = final_sumerize(prompt, fc_msg, weather_result)
 
         print("最终回复：", end="")
         print(final_response)
+
+        break
