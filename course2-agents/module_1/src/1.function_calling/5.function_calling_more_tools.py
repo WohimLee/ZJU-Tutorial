@@ -34,6 +34,15 @@ def get_weather(city: Annotated[str, 'The name of the city to be queried', True]
 
     return str(ret)
 
+def search_info_by_tavily(query):
+    from tavily import TavilyClient
+    client = TavilyClient(os.getenv("TAVILY_API_KEY"))
+    response = client.search(
+        query=query
+    )
+    return json.dumps(response, ensure_ascii=False)
+
+
 # 注册登记函数
 # functions = [
 #     {
@@ -61,6 +70,20 @@ tools = [
                     "city": {"type": "string", "description": "城市名称"}
                 },
                 "required": ["city"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_info_by_tavily",
+            "description": "Tavily 搜索 API，搜索相关信息",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "用户想要搜索的内容"}
+                },
+                "required": ["query"],
             },
         },
     }
