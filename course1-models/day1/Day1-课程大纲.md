@@ -40,9 +40,9 @@
 ### 2. 案例讲解（Case Study）
 #### 2.1 LoRA 微调案例
 
-基于 LLaMA-7B 或 Qwen-7B 做分类或指令微调。
+基于 Qwen3-8B 做分类或指令微调。
 
-#### 2.2 对比学习 + FlagEmbedding 实战案例
+#### 2.2 对比学习 + PEFT 实战案例
 
 - 使用 BGE 进行语义检索向量训练
 - 训练数据格式：`query, positive passage, negative passage`
@@ -61,7 +61,7 @@
 ### 3 实操环节（Hands-on Lab）
 #### 3.1 无 Python 基础学员路径
 >工具：可视化/低代码平台
-- 如 ModelArts、魔塔、ModelScope Studio 等
+- LLaMA-Factory UI
 
 >实操内容
 - 上传训练数据
