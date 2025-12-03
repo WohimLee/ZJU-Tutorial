@@ -71,9 +71,9 @@
 - 启动训练任务并查看日志/结果
 
 #### 3.2 有 Python 基础学员
-##### A. LoRA 微调（同前）
+##### A. LoRA 微调
 >工具
-- LlamaFactory / transformers / peft
+- LlamaFactory
 >实操内容
 - 数据集准备
     - 加载 JSON/CSV 数据
@@ -83,9 +83,7 @@
     - 配置 LoRA 超参数
     - QLoRA 的量化参数（4bit quantization config）
 - 训练脚本编写
-    - 使用 transformers 的 Trainer
     - 使用 LlamaFactory 的快速启动方式
-    - peft 的 LoRA 模块注入方式
 - 训练与调试
     - 启动训练
     - 查看 loss、learning rate、eval metric 等日志
@@ -93,7 +91,7 @@
 
 
 
-##### B.FlagEmbedding 对比学习训练实操
+##### B.Embedding 的微调
 >工具
 - 使用 FlagEmbedding / sentence-transformers 进行向量模型训练：
 >实操内容
@@ -116,6 +114,9 @@
     - 计算向量相似度
     - 输出 eval 指标（Recall@k、MRR）
 
+##### C.Reranker 的微调
+
+
 ### 4 Day 1 交付作业
 #### 无 Python 基础组（任选其一）
 - 提交可视化平台训练任务截图
@@ -134,16 +135,13 @@
 - 模型微调训练脚本
 - 附上训练日志或模型输出截图
 
-##### ② FlagEmbedding 对比学习训练脚本
+##### ② Embedding 的微调
+- Embedding 的训练数据、测试数据
+- Embedding 微调前后对比，评估结果
 
-- 数据加载
-- 对比学习损失
-- 模型训练代码
-- 示例测试输出
-
-##### ③ 混合任务（可选）
-- LoRA 指令微调 + 向量模型训练
-- 展示两类模型在 RAG 中的不同作用
+##### ③ Reranker 的微调
+- Reranker 的训练数据、测试数据
+- Reranker 微调前后对比，评估结果
 
 ### 5 课后预期成果（增强版）
 - 掌握生成模型 + 检索模型的基础训练方法
