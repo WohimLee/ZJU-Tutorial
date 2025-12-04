@@ -10,6 +10,7 @@ cache
 zh-en-data
 zh-en-tokens
 .ipynb_checkpoints
+intents_data
 
 # files
 *.pt

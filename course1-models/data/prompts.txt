@@ -1,0 +1,23 @@
+现在针对类别1-5，每个类别生成100条用户提问/query样本，用于训练意图识别，要求多样化（偏口语的、专业的/非专业的、省略的...），每个类别生成一个json文件，存储在course1-models/data目录下，每条数据格式如下：
+```
+{"query": 用户的问题/query, "intent": 所属的意图}
+```
+
+
+
+现在针对类别11-20，每个类别生成50条用户提问/query样本，用于训练意图识别，要求多样化（偏口语的、专业的/非专业的、省略的...），每个类别生成一个json文件，存储在course1-models/data目录下，每条数据格式如下：
+```
+{"query": 用户的问题/query, "intent": 所属的意图, "class": 意图映射的类别}
+```
+- `"class": 意图映射的类别` 参考 `course1-models/data/intents_mapping.json`
+
+
+`course1-models/data/intents.txt`是我们华泰证券公司“AI涨乐aPP” 业务部门给我们梳理出来的可能涉及的用户意图；
+`course1-models/data/intents_mapping.json` 是意图的类别映射；
+
+针对类别1-50，每个类别生成10条用户提问/query样本，用于训练意图识别，要求多样化（偏口语的、专业的/非专业的、省略的...），每个类别生成一个json文件，存储在course1-models/data目录下，每条数据格式如下：
+```
+{"query": 用户的问题/query, "intent": 所属的意图, "class": 意图映射的类别}
+```
+
+
