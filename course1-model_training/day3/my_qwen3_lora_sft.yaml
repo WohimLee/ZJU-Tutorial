@@ -1,0 +1,46 @@
+### model
+model_name_or_path: /root/wohim/models/Qwen3-8B     # 基座模型路径（本地目录或 HF repo 名），从这里加载权重与配置
+trust_remote_code: true                             # 允许执行模型仓库自带的自定义代码（某些模型必须开；但有安全风险）
+
+### method
+stage: sft                                          # 训练阶段：SFT（监督微调）
+do_train: true                                      # 执行训练流程
+finetuning_type: lora                               # 微调方式：LoRA（只训练低秩适配器，不全量更新模型权重）
+lora_rank: 8                                        # LoRA 的秩 r，越大可训练参数越多、表达力更强但更吃显存/更易过拟合
+lora_target: all                                    # 给哪些模块打 LoRA：all = 尽可能对所有可注入的线性层打（省事但更重）
+
+### dataset
+dataset: identity,alpaca_en_demo                    # 使用的数据集列表（逗号分隔）；这里是示例集/内置集名
+template: llama3                                    # Prompt/对话模板（决定系统/用户/助手格式）；Qwen3 通常不该用 llama3
+cutoff_len: 2048                                    # 单条样本最大截断长度（token）；超过会截断，影响长文本学习与显存占用
+max_samples: 1000                                   # 每个数据集最多取多少条样本用于训练（用于快速实验；0/不填通常表示全量）
+overwrite_cache: true                               # 覆盖预处理缓存（数据重新分词/重新处理）
+preprocessing_num_workers: 16                       # 数据预处理（分词、拼接等）的并行进程数，越大越快但更吃 CPU/RAM
+dataloader_num_workers: 4                           # PyTorch DataLoader 读取数据的 worker 数，提升数据吞吐
+
+### output
+output_dir: saves/llama3-8b/lora/sft                # 输出目录：保存 checkpoint、日志、配置等（建议按实际模型名改）
+logging_steps: 10                                   # 每隔多少 step 打印一次训练日志（loss、lr 等）
+save_steps: 500                                     # 每隔多少 step 保存一次 checkpoint
+plot_loss: true                                     # 训练结束后绘制 loss 曲线（会生成图/日志文件）
+overwrite_output_dir: true                          # 如果输出目录已存在，允许覆盖（小心误删旧实验）
+save_only_model: false                              # 是否只保存模型权重（true = 不保存 optimizer/scheduler 等状态）
+report_to: none                                     # 日志上报平台：none/wandb/tensorboard 等；none 表示不对接
+
+### train
+per_device_train_batch_size: 1                      # 每张 GPU 的 micro-batch 大小（显存主要由它和 cutoff_len 决定）
+gradient_accumulation_steps: 8                      # 梯度累积步数；等效总 batch = batch_size * 累积 * GPU数
+learning_rate: 1.0e-4                               # 学习率（LoRA 常见 1e-4~2e-5，视数据规模与稳定性调整）
+num_train_epochs: 3.0                               # 训练轮数（对小数据通常 1~5；太大易过拟合）
+lr_scheduler_type: cosine                           # 学习率调度器类型：cosine 表示余弦退火
+warmup_ratio: 0.1                                   # warmup 占总步数比例（前 10% 线性升到最大学习率）
+bf16: true                                          # 使用 bfloat16 混合精度（A100/H100/部分新卡更稳；老卡不支持）
+ddp_timeout: 180000000                              # DDP 分布式训练超时时间（大数避免多机/慢启动导致超时）
+resume_from_checkpoint: null                        # 从某个 checkpoint 恢复训练；null 表示不恢复
+
+### eval
+eval_dataset: alpaca_en_demo                        # 验证集数据来源（可单独指定）；注释表示不做 eval
+val_size: 0.1                                       # 从训练数据切分出 10% 做验证（不单独指定 eval_dataset 时常用）
+per_device_eval_batch_size: 1                       # 每张 GPU 的验证 batch
+eval_strategy: steps                                # 验证触发策略：按 steps 或 epoch
+eval_steps: 500                                     # 每隔多少 step 跑一次验证
