@@ -15,7 +15,7 @@ Host AutoDL-5090-Traning    # 自命名
 ```
 
 #### 1.3 设置免密登录
-![alt text](image-1.png)
+![alt text](imgs/no_passwd.png)
 
 
 ### 2 搭建 Llama-Factory 环境
