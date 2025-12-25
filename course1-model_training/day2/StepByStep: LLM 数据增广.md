@@ -5,7 +5,7 @@
 - [DeepSeek](https://platform.deepseek.com/usage)
 - [Doubao](https://console.volcengine.com/ark/region:ark+cn-beijing/model/detail?Id=doubao-seed-1-6)
 
-可以充值10块钱，阿里云新用户免费
+阿里云新用户免费
 
 ### 2 使用示例代码跑通大模型调用
 
@@ -30,3 +30,8 @@ completion = client.chat.completions.create(
 for chunk in completion:
     print(chunk.choices[0].delta.content, end="", flush=True)
 ```
+
+### 3 生成 prompt
+
+目的+示例代码
+
