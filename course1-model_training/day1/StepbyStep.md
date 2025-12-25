@@ -31,5 +31,38 @@ cd LLaMA-Factory
 
 conda activate llama-factory
 pip install -e ".[torch,metrics]" --no-build-isolation
+
+pip install deepspeed
 ```
 
+### 3 下载模型
+
+- Qwen3-0.6B: https://modelscope.cn/models/Qwen/Qwen3-0.6B
+
+- 手动下载模型权重：
+```
+wget https://modelscope.cn/models/Qwen/Qwen3-0.6B/resolve/master/model.safetensors
+```
+
+### 4 准备数据集
+
+复制下面数据集为 xxx_identity：
+```
+LLaMA-Factory/data/identity.json
+```
+
+注册 `dataset_info.json`
+
+```json
+"xxx_identity": {
+    "file_name": "xxx_identity.json"
+  },
+```
+
+### 5 启动 web ui 训练方式
+
+```
+llamafactory-cli webui
+```
+
+![alt text](image.png)
