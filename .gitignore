@@ -13,6 +13,7 @@ zh-en-tokens
 intents_data
 
 # files
+*.env
 *.pt
 *.pth
 *.pkl
