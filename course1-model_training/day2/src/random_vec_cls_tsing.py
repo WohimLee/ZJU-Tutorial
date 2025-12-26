@@ -1,11 +1,14 @@
 
-
+import os
 import torch
 import numpy as np
 import torch.nn as nn
 
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
+
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
 
 
 '''
@@ -75,8 +78,8 @@ def collate_fn(batch):
 class Model(nn.Module):
     def __init__(self, in_features, classes):
         super().__init__()
-        self.emb = torch.random
-        self.W1  = nn.Linear(in_features=in_features, out_features=256)
+        self.emb = torch.randn(size=(in_features, 64))
+        self.W1  = nn.Linear(in_features=64, out_features=256)
         self.W2  = nn.Linear(in_features=256, out_features=128)
 
         self.cls = nn.Linear(in_features=128, out_features=classes)
@@ -115,17 +118,19 @@ def run_valid(valid_loader):
 
 
 if __name__ == "__main__":
-    train_txt = "data/tsinghua-news/train.txt"
-    valid_txt = "data/tsinghua-news/test.txt"
-
+    train_txt = os.path.join(PROJECT_ROOT, "data", "tsinghua-news/train.txt")
+    valid_txt = os.path.join(PROJECT_ROOT, "data", "tsinghua-news/test.txt")
     train_titles, train_labels = read_data(train_txt, num=None)
     valid_titles, valid_labels = read_data(valid_txt)
 
+    # 构建词典/字典，字->ID，ID->字
     vocab, idx2word = build_vocab(train_titles)
 
+    # 文本转向量
     train_set = THUCNews(train_titles, train_labels)
     valid_set = THUCNews(valid_titles, valid_labels)
 
+    # 数据加载器
     train_loader = DataLoader(train_set, batch_size=32, collate_fn=collate_fn, shuffle=True)
     valid_loader = DataLoader(valid_set, batch_size=8, collate_fn=collate_fn, shuffle=False)
 
