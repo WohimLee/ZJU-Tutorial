@@ -1,0 +1,20 @@
+{"question": "Qwen系列大模型采用的是哪种基础架构？", "answer": "Qwen系列基于类似GPT的Transformer Decoder-only架构，并在attention、position encoding等方面进行了优化，例如rope多尺度化和缓存优化。"}
+{"question": "Base模型是如何获得语言理解与推理能力的？", "answer": "Base模型通过在大量无监督文本（如网页、书籍、代码、论文等）上进行自监督训练，以预测下一个token为目标函数，从而习得语言理解、知识储备、推理能力和世界常识。"}
+{"question": "为什么需要对SFT后的模型进一步进行偏好对齐？", "answer": "因为SFT只能教会模型如何回答问题，但无法确保其输出的安全性、礼貌度、合理性、稳定性或避免胡说，因此需通过RLHF、DPO等偏好对齐技术优化行为。"}
+{"question": "Qwen3的Embedding模型主要采用了哪些训练方法？", "answer": "Qwen3的Embedding模型主要采用对比学习、大规模文本对齐数据以及多语言表示优化进行训练。"}
+{"question": "Reranker模型在RAG系统中起到什么作用？", "answer": "Reranker模型用于检索排序，在RAG中对初步检索结果重新打分排序，提升最终答案的相关性和准确性。"}
+{"question": "Qwen3系列中用于对话场景的模型是通过哪些关键步骤从Base模型演化而来的？", "answer": "Qwen3系列中用于对话场景的模型（如Qwen3-Chat）是在Base模型基础上，先进行监督微调（SFT）以学习人类交互方式，再通过偏好对齐技术（如RLHF或DPO）优化安全性、礼貌度和回答合理性。"}
+{"question": "为什么Embedding模型不能直接从Decoder-only的Base模型裁剪得到？", "answer": "因为Embedding模型通常基于双向Transformer Encoder架构（类似BERT），而非Decoder-only结构，因此需要重新训练或通过蒸馏、对比学习等方式专门构建。"}
+{"question": "Reranker模型在训练时使用了什么样的数据和损失函数？", "answer": "Reranker模型使用大量标注好的(query, passage, relevance)数据，并采用pairwise或listwise ranking loss进行训练，也可能通过蒸馏大模型（如Qwen3-72B）获得。"}
+{"question": "多模态视觉语言模型Qwen-VL是如何将图像信息与语言模型结合的？", "answer": "Qwen-VL首先训练一个视觉编码器（如ViT）将图片转为向量，然后通过投影层将视觉特征对齐到语言空间，最后利用OCR图片、图文配对等混合多模态数据进行联合训练。"}
+{"question": "不同参数规模的Qwen3模型分别适用于哪些典型应用场景？", "answer": "小模型（1-4B）适合本地端侧部署；中模型（7-14B）平衡推理能力与成本；大模型（30-70B）支持强推理、长上下文和高质量生成；超大模型（100B+）则用于追求极致性能的场景。"}
+{"question": "Qwen3 的 Embedding 模型主要采用哪些技术进行训练？", "answer": "Qwen3 的 embedding 多采用对比学习、大规模文本对齐数据和多语言表示优化。"}
+{"question": "为什么 Reranker 模型通常比 Embedding 模型更准确？", "answer": "因为 Reranker 通常是 Cross-Encoder，输入为 query + candidate 并输出相关性分数，训练使用 ranking loss 或蒸馏大模型，虽然更“重”但更准确。"}
+{"question": "Vision LLM（如 Qwen-VL）是如何实现图像理解能力的？", "answer": "通过训练视觉编码器（如 ViT）、将视觉特征投影到语言空间进行多模态对齐，并用 OCR 图片、图文配对等混合数据训练。"}
+{"question": "在 Qwen3 系列中，不同参数规模的模型分别适用于哪些场景？", "answer": "小模型（1-4B）用于本地端侧部署，中模型（7-14B）平衡成本与推理能力，大模型（30-70B）支持强推理和高质量生成，超大模型（100B+）追求极致性能。"}
+{"question": "Base 模型在预训练阶段通过什么目标函数学习语言能力？", "answer": "Base 模型在预训练阶段的目标函数通常是让模型预测下一个 token（Next-token Prediction）。"}
+{"question": "Qwen3系列中用于向量检索的Embedding模型是如何训练的？", "answer": "Qwen3的Embedding模型采用对比学习、大规模文本对齐数据和多语言表示优化进行训练，属于重新训练或迁移训练的Encoder模型。"}
+{"question": "为什么Reranker模型通常比Embedding模型更准确但更‘重’？", "answer": "因为Reranker通常是Cross-Encoder结构，输入为query与候选段落的组合，并通过pairwise/listwise排序损失训练，在问答系统或RAG中用于精细重排序，计算开销更大但精度更高。"}
+{"question": "在Qwen3的多模态模型Qwen-VL中，视觉信息是如何与语言模型结合的？", "answer": "通过先训练一个视觉编码器（如ViT）将图片转为向量，再用投影层将视觉特征对齐到语言空间，最后利用OCR、图文配对等混合数据联合训练形成视觉语言模型。"}
+{"question": "除了参数规模差异，Qwen3系列中的Math/Code/Reasoning模型与普通Chat模型有何不同？", "answer": "这些专项模型在Base或Chat模型基础上，使用领域特定数据（如数学、代码、推理任务）进行了额外的再训练，以强化特定能力。"}
+{"question": "从Base模型到最终发布的Qwen3全家桶，中间经历了哪些关键扩展步骤？", "answer": "包括SFT生成Chat模型、偏好对齐（DPO/RLHF）、训练Embedding/Reranker/Vision等专用模型、以及蒸馏量化形成不同参数规模版本，最终构成多模型协同的产品族。"}
