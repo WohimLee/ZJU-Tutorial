@@ -1,7 +1,7 @@
 import json
 from tqdm import tqdm
 
-src_path = "DISC-Law-SFT-Triplet-released.jsonl"
+src_path = "law_train.jsonl"
 alpaca_out = "law_alpaca.json"
 sharegpt_out = "law_sharegpt.json"
 
